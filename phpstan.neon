@@ -1,0 +1,9 @@
+parameters:
+    level: 2
+    fileExtensions:
+        - php
+    paths:
+        - src
+        - tests
+includes:
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
