@@ -26,9 +26,6 @@ install:
   - php -v
   - composer install --prefer-dist
 
-before_script:
-  - composer analyze
-
 script:
   - composer run test
 
