@@ -32,17 +32,35 @@ class CacheItemPoolFactoryTest extends TestCase
     /** @var ContainerInterface|ObjectProphecy $container */
     protected $container;
 
+    /** @var \Redis|ObjectProphecy|null $redis */
+    protected $redis;
+
+    /** @var PDO|ObjectProphecy|null */
+    protected $pdo;
+
+    /** @var Connection|ObjectProphecy */
+    protected $connection;
+
     public function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->pdo = $this->prophesize(PDO::class);
+
+        if (class_exists(PDO::class)) {
+            $this->pdo = $this->prophesize(PDO::class);
+        }
+
+        if (class_exists(\Redis::class)) {
+            $this->redis = $this->prophesize(\Redis::class);
+        }
+
+        $this->connection = $this->prophesize(Connection::class);
     }
 
     public function testEmptyConfigurationBuild(): void
     {
         $pool = $this->buildAdapter([]);
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(ArrayAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(ArrayAdapter::class, $pool);
     }
 
     public function testArrayAdapter(): void
@@ -56,22 +74,22 @@ class CacheItemPoolFactoryTest extends TestCase
                 ],
             ],
         ]);
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(ArrayAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(ArrayAdapter::class, $pool);
     }
 
     public function testApcuAdapter(): void
     {
         if (!ApcuAdapter::isSupported()) {
-            $this->markTestSkipped('apcu extension is missing');
+            static::markTestSkipped('apcu extension is missing');
         }
 
         $pool = $this->buildAdapter([
             'adapter' => 'apcu',
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(ApcuAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(ApcuAdapter::class, $pool);
     }
 
     public function testFileSystemAdapter(): void
@@ -80,17 +98,17 @@ class CacheItemPoolFactoryTest extends TestCase
             'adapter' => 'filesystem',
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(FilesystemAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(FilesystemAdapter::class, $pool);
     }
 
     public function testRedisAdapter(): void
     {
         if (!class_exists(\Redis::class)) {
-            $this->markTestSkipped('redis extension is missing.');
+            static::markTestSkipped('redis extension is missing.');
         }
 
-        $client = $this->prophesize(\Redis::class)->reveal();
+        $client = $this->redis->reveal();
 
         $this->container->has('redis_service')
             ->shouldBeCalledOnce()
@@ -108,17 +126,17 @@ class CacheItemPoolFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(RedisAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(RedisAdapter::class, $pool);
     }
 
     public function testRedisAdapterInstance(): void
     {
         if (!class_exists(\Redis::class)) {
-            $this->markTestSkipped('redis extension is missing.');
+            static::markTestSkipped('redis extension is missing.');
         }
 
-        $client = $this->prophesize(\Redis::class)->reveal();
+        $client = $this->redis->reveal();
 
         $pool = $this->buildAdapter([
             'adapter' => 'redis',
@@ -129,18 +147,17 @@ class CacheItemPoolFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(RedisAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(RedisAdapter::class, $pool);
     }
 
     public function testPdoAdapter(): void
     {
         if (!class_exists(PDO::class)) {
-            $this->markTestSkipped('pdo extension is missing.');
+            static::markTestSkipped('pdo extension is missing.');
         }
 
-        $pdo = $this->prophesize(PDO::class);
-        $pdo->getAttribute(PDO::ATTR_ERRMODE)
+        $this->pdo->getAttribute(PDO::ATTR_ERRMODE)
             ->shouldBeCalledOnce()
             ->willReturn(PDO::ERRMODE_EXCEPTION);
 
@@ -149,7 +166,7 @@ class CacheItemPoolFactoryTest extends TestCase
             ->willReturn(true);
         $this->container->get('pdo_service_alias')
             ->shouldBeCalledOnce()
-            ->willReturn($pdo->reveal());
+            ->willReturn($this->pdo->reveal());
 
         $pool = $this->buildAdapter([
             'adapter' => 'pdo',
@@ -160,18 +177,17 @@ class CacheItemPoolFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(PdoAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(PdoAdapter::class, $pool);
     }
 
     public function testPdoAdapterInstance(): void
     {
         if (!class_exists(PDO::class)) {
-            $this->markTestSkipped('pdo extension is missing.');
+            static::markTestSkipped('pdo extension is missing.');
         }
 
-        $pdo = $this->prophesize(PDO::class);
-        $pdo->getAttribute(PDO::ATTR_ERRMODE)
+        $this->pdo->getAttribute(PDO::ATTR_ERRMODE)
             ->shouldBeCalledOnce()
             ->willReturn(PDO::ERRMODE_EXCEPTION);
 
@@ -179,30 +195,28 @@ class CacheItemPoolFactoryTest extends TestCase
             'adapter' => 'pdo',
             'adapters' => [
                 'pdo' => [
-                    'instance' => $pdo->reveal(),
+                    'instance' => $this->pdo->reveal(),
                 ],
             ],
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(PdoAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(PdoAdapter::class, $pool);
     }
 
     public function testPdoAdapterAcceptsDoctrineDbalConnection(): void
     {
-        $connection = $this->prophesize(Connection::class);
-
         $pool = $this->buildAdapter([
             'adapter' => 'pdo',
             'adapters' => [
                 'pdo' => [
-                    'instance' => $connection->reveal(),
+                    'instance' => $this->connection->reveal(),
                 ],
             ],
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(PdoAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(PdoAdapter::class, $pool);
     }
 
     public function testPdoAdapterAcceptsDnsString(): void
@@ -218,8 +232,8 @@ class CacheItemPoolFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(PdoAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(PdoAdapter::class, $pool);
     }
 
     public function testPhpFilesAdapter(): void
@@ -228,8 +242,8 @@ class CacheItemPoolFactoryTest extends TestCase
             'adapter' => 'php_files',
         ]);
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(PhpFilesAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(PhpFilesAdapter::class, $pool);
     }
 
     public function testChainAdapter(): void
@@ -242,11 +256,16 @@ class CacheItemPoolFactoryTest extends TestCase
             ->willReturn(['cache' => ['adapter' => 'chain']]);
         $pool = (new CacheItemPoolFactory())($this->container->reveal());
 
-        $this->assertInstanceOf(CacheItemPoolInterface::class, $pool);
-        $this->assertInstanceOf(ChainAdapter::class, $pool);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(ChainAdapter::class, $pool);
     }
 
-    protected function buildAdapter(array $config)
+    /**
+     * @param array $config
+     *
+     * @return CacheItemPoolInterface
+     */
+    protected function buildAdapter(array $config): CacheItemPoolInterface
     {
         $this->container->has('config')
             ->shouldBeCalledTimes(2)

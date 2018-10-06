@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Validus\Tests\Cache\Simple;
 
 use PHPStan\Testing\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -21,21 +22,30 @@ use Validus\Cache\Simple\CacheFactory;
 
 class CacheFactoryTest extends TestCase
 {
+    /** @var ContainerInterface|ObjectProphecy $container */
+    protected $container;
+
+    /** @var CacheItemPoolInterface|ObjectProphecy $pool */
+    protected $pool;
+
+    public function setUp(): void
+    {
+        $this->container = $this->prophesize(ContainerInterface::class);
+        $this->pool = $this->prophesize(CacheItemPoolInterface::class);
+    }
+
     public function testPsr6CacheBridge(): void
     {
         $factory = new CacheFactory();
 
-        $pool = $this->prophesize(CacheItemPoolInterface::class);
-
-        $container = $this->prophesize(ContainerInterface::class);
-        $container->get(CacheItemPoolInterface::class)
+        $this->container->get(CacheItemPoolInterface::class)
             ->shouldBeCalled()
             ->willReturn(
-                $pool->reveal()
+                $this->pool->reveal()
             );
 
-        $cache = $factory($container->reveal());
-        $this->assertInstanceOf(CacheInterface::class, $cache);
-        $this->assertInstanceOf(Psr6Cache::class, $cache);
+        $cache = $factory($this->container->reveal());
+        static::assertInstanceOf(CacheInterface::class, $cache);
+        static::assertInstanceOf(Psr6Cache::class, $cache);
     }
 }

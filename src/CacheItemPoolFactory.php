@@ -96,13 +96,10 @@ class CacheItemPoolFactory
         switch ($adapter) {
             case 'array':
                 return new ArrayAdapter($config['default_lifetime'], $config['store_serialized']);
-                break;
             case 'apcu':
                 return new ApcuAdapter($config['namespace'], $config['default_lifetime'], $config['version']);
-                break;
             case 'filesystem':
                 return new FilesystemAdapter($config['namespace'], $config['default_lifetime'], $config['directory']);
-                break;
             case 'redis':
                 $instance = $config['instance'];
 
@@ -111,7 +108,6 @@ class CacheItemPoolFactory
                 }
 
                 return new RedisAdapter($instance, $config['namespace'], $config['default_lifetime']);
-                break;
             case 'pdo':
                 $instance = $config['instance'];
 
@@ -122,10 +118,8 @@ class CacheItemPoolFactory
                 }
 
                 return new PdoAdapter($instance, $config['namespace'], $config['default_lifetime'], $config['options']);
-                break;
             case 'php_files':
                 return new PhpFilesAdapter($config['namespace'], $config['default_lifetime'], $config['directory']);
-                break;
             case 'chain':
                     $adapters = [];
 
@@ -134,11 +128,8 @@ class CacheItemPoolFactory
                     }
 
                     return new ChainAdapter($adapters);
-                break;
-            case 'null':
             default:
                 return new NullAdapter();
-                break;
         }
     }
 
