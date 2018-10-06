@@ -22,6 +22,7 @@ use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\ChainAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Cache\Adapter\PdoAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -258,6 +259,13 @@ class CacheItemPoolFactoryTest extends TestCase
 
         static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
         static::assertInstanceOf(ChainAdapter::class, $pool);
+    }
+
+    public function testUnknownAdapterNameResolvesToNullAdapter(): void
+    {
+        $pool = $this->buildAdapter(['adapter' => '404']);
+        static::assertInstanceOf(CacheItemPoolInterface::class, $pool);
+        static::assertInstanceOf(NullAdapter::class, $pool);
     }
 
     /**

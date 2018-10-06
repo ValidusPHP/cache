@@ -97,10 +97,13 @@ class CacheItemPoolFactory
             case 'array':
                 return new ArrayAdapter($config['default_lifetime'], $config['store_serialized']);
             case 'apcu':
+                // @codeCoverageIgnoreStart
                 return new ApcuAdapter($config['namespace'], $config['default_lifetime'], $config['version']);
+                // @codeCoverageIgnoreEnd
             case 'filesystem':
                 return new FilesystemAdapter($config['namespace'], $config['default_lifetime'], $config['directory']);
             case 'redis':
+                // @codeCoverageIgnoreStart
                 $instance = $config['instance'];
 
                 if (\is_string($instance) && $container->has($instance)) {
@@ -108,7 +111,9 @@ class CacheItemPoolFactory
                 }
 
                 return new RedisAdapter($instance, $config['namespace'], $config['default_lifetime']);
+                // @codeCoverageIgnoreEnd
             case 'pdo':
+                // @codeCoverageIgnoreStart
                 $instance = $config['instance'];
 
                 if (\is_string($instance) && $container->has($instance)) {
@@ -118,6 +123,7 @@ class CacheItemPoolFactory
                 }
 
                 return new PdoAdapter($instance, $config['namespace'], $config['default_lifetime'], $config['options']);
+                // @codeCoverageIgnoreEnd
             case 'php_files':
                 return new PhpFilesAdapter($config['namespace'], $config['default_lifetime'], $config['directory']);
             case 'chain':
