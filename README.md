@@ -23,7 +23,7 @@ Please note that the values in there are the defaults, and don't have to be supp
 
 If your application uses the zend-component-installer Composer plugin, your configuration is complete; the shipped `Validus\Cache\ConfigProvider` registers the cache service.
 
-#### Accessing the translator 
+#### Accessing the cache adapter
 you can access the cache implementation via the container :
 ```php
 use Psr\Cache\CacheItemPoolInterface;
