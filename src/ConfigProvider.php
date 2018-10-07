@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Validus\Cache;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Validus\Cache\Simple\CacheFactory;
 
 class ConfigProvider
@@ -35,6 +36,7 @@ class ConfigProvider
         return [
             'factories' => [
                 CacheInterface::class => CacheFactory::class,
+                CacheItemPoolInterface::class => CacheItemPoolFactory::class,
             ],
         ];
     }
