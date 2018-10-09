@@ -36,3 +36,13 @@ $pool = $container->get(CacheItemPoolInterface::class);
 $cache = $container->get(CacheInterface::class);
 ```
 
+#### Middleware
+
+Validus cache package comes with a `CacheResetMiddleware`, allowing you to reset the cache pool to its initial status after every request.
+
+you can add the middleware to your `config/pipeline.php` file like this : 
+```php
+    $app->pipe(\Validus\Cache\Middleware\CacheResetMiddleware::class);
+```
+
+a factory for the middleware is already provided in the config provider so you don't have to worry about that as long as you are using zend-component-installer composer plugin.
