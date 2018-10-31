@@ -1,6 +1,6 @@
 {
     "name": "validus/cache",
-    "description": "Provides PSR-6 and PSR-16 cache implementation facotirs for your Expressive project.",
+    "description": "Provides PSR-6 and PSR-16 cache implementation factories for your Expressive project.",
     "type": "library",
     "homepage": "https://github.com/ValidusPHP/cache",
     "license": "MIT",
