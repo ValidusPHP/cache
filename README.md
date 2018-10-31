@@ -1,6 +1,6 @@
 # Validus Cache
 
-Provides caching implementations for zend expressive projects.
+Provides PSR-6 and PSR-16 cache implementation factories for your Expressive project.
 
 ---
 [![Packagist](https://img.shields.io/packagist/dm/validus/cache.svg)](https://packagist.org/packages/validus/cache) [![GitHub license](https://img.shields.io/github/license/ValidusPHP/cache.svg)](https://github.com/ValidusPHP/cache/blob/master/LICENSE) [![Build Status](https://travis-ci.org/ValidusPHP/cache.svg?branch=master)](https://travis-ci.org/ValidusPHP/cache) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ValidusPHP/cache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ValidusPHP/cache/?branch=master) [![Code Intelligence Status](https://scrutinizer-ci.com/g/ValidusPHP/translation/badges/code-intelligence.svg)](https://scrutinizer-ci.com/code-intelligence) [![Coverage Status](https://coveralls.io/repos/github/ValidusPHP/cache/badge.svg?branch=master)](https://coveralls.io/github/ValidusPHP/cache)
