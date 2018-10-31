@@ -1,6 +1,6 @@
 {
     "name": "validus/cache",
-    "description": "Provides cache for your Expressive project.",
+    "description": "Provides PSR-6 and PSR-16 cache implementation factories for your Expressive project.",
     "type": "library",
     "homepage": "https://github.com/ValidusPHP/cache",
     "license": "MIT",
@@ -8,7 +8,11 @@
         "zend-expressive",
         "symfony-cache",
         "container-interop-cache",
-        "psr-11"
+        "psr-11",
+        "psr-16",
+        "psr-6",
+        "factories",
+        "cache"
     ],
     "require": {
         "php": "^7.1",
